@@ -50,8 +50,11 @@ func (r *room) close() {
 	}
 
 	delete(r.server.rooms, r.name)
-	r.pubsub.Unsubscribe(context.Background(), r.name)
-	r.pubsub.Close()
+
+	if r.server.clustered() {
+		r.pubsub.Unsubscribe(context.Background(), r.name)
+		r.pubsub.Close()
+	}
 }
 
 func (r *room) broadcast(data []byte) {
